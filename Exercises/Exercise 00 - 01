@@ -1,3 +1,4 @@
+#a)
 import math
 
 a = 3**2
@@ -7,3 +8,13 @@ result = math.sqrt(c)
 print(f'Hypotinusan är {result}')
 
 
+#b)
+
+import math
+
+c = 7.0**2
+a = 5.0**2
+b= c-a
+result = math.sqrt(b)
+result = round(result,1)
+print(f'B har en längd av {result}')
