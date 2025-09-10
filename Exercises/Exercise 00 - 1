@@ -5,3 +5,5 @@ b = 4**2
 c= a+b
 result = math.sqrt(c)
 print(f'Hypotinusan är {result}')
+
+
