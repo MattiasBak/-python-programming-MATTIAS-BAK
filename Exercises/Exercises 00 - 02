@@ -1,0 +1,7 @@
+import math
+
+days = 100/365
+print(days)
+correct = days*300
+correct = round(correct,2)
+print(f'Programet ger oss väderleken med en säkerhet på {correct}%')
