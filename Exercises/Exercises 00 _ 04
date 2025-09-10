@@ -1,0 +1,17 @@
+import math
+#y=K*x+m
+
+Y=input('What is delta Y?\n> ')
+X=input('What is delta X?\n> ')
+K= int(Y)/int(X)
+M = input(float('Where does the line cross the X axis?\n> '))
+M = float(M)
+print(f'The result is y={K}*X+{M}')
+
+#Eller
+
+Y= 3
+X= 4
+K= int(Y)/int(X)
+
+print(f'The solution is: y={K}*X+1')
