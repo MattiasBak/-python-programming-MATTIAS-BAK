@@ -1,0 +1,39 @@
+import math
+x1 = input('Vad är X1?\n> ')
+x2 = input('Vad är X2?\n> ')
+y1 = input('Vad är Y1?\n> ')
+y2 = input('Vad är Y2?\n> ')
+
+
+P2= int(x2)-int(x1)
+P1= int(y2)-int(y1)
+
+P2= P2**2
+P1= P1**2
+print(P1)
+print(P2)
+Pos = P1+P2
+distance = math.sqrt(Pos)
+distance = round(distance,1)
+print (distance)
+
+#eller
+
+import math
+x1 = 3
+x2 = -2
+y1 = 5
+y2 = 4
+
+
+P2= int(x2)-int(x1)
+P1= int(y2)-int(y1)
+
+P2= P2**2
+P1= P1**2
+print(P1)
+print(P2)
+Pos = P1+P2
+distance = math.sqrt(Pos)
+distance = round(distance,1)
+print (distance)
