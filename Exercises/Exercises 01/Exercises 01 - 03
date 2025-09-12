@@ -1,0 +1,19 @@
+print('Lets make a triangle, Can you give me three different degrees? Remember for it to be a propper triangle the sum'
+      'of the three different needs to be 180. Okay? Lets go.')
+a = int(input('Would you please give me the first number?\n> '))
+b = int(input('Would you please give me the second number?\n> '))
+c = int(input('And the third if you would, please?\n> '))
+
+if a == 90:
+    print('The first one at 90 degrees. Not unexpected, but a truly good choice')
+elif b == 90:
+    print('The second one at 90 degrees. interesting, I wounder what compelled you to make it the secund choice.')
+elif c == 90:
+    print('Oh you put 90 degrees last, you almost had me fooled there.')
+else:
+    print('Not a single 90 degree in the calculation? You are brave my friend, brave or foolish.')
+if a+b+c == 180:
+    print('Good, you can make a triangle')
+
+else:
+    print('Sorry, but it has to be exactly 180 degrees')
