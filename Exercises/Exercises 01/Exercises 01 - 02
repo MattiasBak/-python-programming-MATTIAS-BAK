@@ -1,0 +1,16 @@
+try:
+    number1 = input('Please sir, give me a number?\n> ')
+    number1 = int(number1)
+    number2 = input('Ahhh, good number, give me another one\n> ')
+    number2 = int(number2)
+
+    if number1>number2:
+        print(f'Ah I see that the secund number is smaller than the second. I ask you, Why you say {number2}')
+    elif number2>number1:
+        print(f'The first number is lesser, interesting. If I may ask glorious sir, why number {number1}')
+    elif number1==number2:
+        print(f'Ah same number interesting. Both are equal in the eyes of the counting gods for a {number1} is always '
+              f'a {number2}')
+except ValueError:
+    print('I ask you for number, you give me this?.')
+
