@@ -1,6 +1,5 @@
 import math
 
-days = 100/365
-correct = days*300
+correct = 300/365*100
 correct = round(correct,2)
 print(f'Programet ger oss väderleken med en säkerhet på {correct}%')
