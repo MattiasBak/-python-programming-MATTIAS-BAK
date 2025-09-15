@@ -1,24 +1,6 @@
 import math
 
+value = (2+985)/(2+985+11+2)
+accuracy = round(value,3)
+print(value)
 
-TP = input ('Hur många positiva resultat har vi?\n>')
-TN = input ('Hur många negativa resultat har vi?\n>')
-FN = input ('Hur många falska negativa är det?\n>')
-FP = input('Hur många falska positiva har vi?\n>')
-correct = int(TP) + int(TN)
-gathered = int(TP) + int(FP) + int(TN) + int(FN)
-accuracy = correct/gathered
-accuracy = round(accuracy,3)
-print(accuracy)
-
-#eller
-
-TP = 2
-TN = 985
-FN = 11
-FP = 2
-correct = int(TP) + int(TN)
-gathered = int(TP) + int(FP) + int(TN) + int(FN)
-accuracy = correct/gathered
-accuracy = round(accuracy,3)
-print(accuracy)
