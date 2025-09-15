@@ -1,8 +1,6 @@
 try:
-    number1 = input('Please sir, give me a number?\n> ')
-    number1 = int(number1)
-    number2 = input('Ahhh, good number, give me another one\n> ')
-    number2 = int(number2)
+    number1 = int(input('Please sir, give me a number?\n> '))
+    number2 = int(input('Ahhh, good number, give me another one\n> '))
 
     if number1>number2:
         print(f'Ah I see that the secund number is smaller than the second. I ask you, Why you say {number2}')
