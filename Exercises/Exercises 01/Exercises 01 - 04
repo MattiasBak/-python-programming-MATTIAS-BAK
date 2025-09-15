@@ -1,0 +1,29 @@
+Weight = int(input(' The patients weight is?\n> '))
+age = int(input('How old is the patient?\n> '))
+
+if Weight >=41:
+    if age >12:
+        print('The dose recommended for the patient is 1-2 pill daily.')
+    elif age <=12 and age >=7:
+        print ('The patient should have 1/2 to 1 pill.')
+    elif age <7 and age >=3:
+        print ('The patient should have 1/2 a pill.')
+    else:
+        print('We recommend that the patient receives a different medication.')
+
+elif Weight <=40 and Weight >=26:
+    print('we recommend the patient is given 1/2 to one pill daily.')
+    if age >= 7:
+        print('The patient should have 1/2 to 1 pill.')
+    elif age>= 3:
+        print('The patient should have 1/2 pill.')
+    else:
+        print('We recommend an alternative medicament.')
+
+elif Weight <26 and Weight > 15:
+    if age >= 3:
+        print('The recommendation is 1/2 a pill daily.')
+    else:
+        print('We recommend an alternative medication.')
+else:
+    print('We recommend an alternative medicament.')
