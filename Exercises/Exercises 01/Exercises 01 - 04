@@ -27,3 +27,21 @@ elif Weight <26 and Weight > 15:
         print('We recommend an alternative medication.')
 else:
     print('We recommend an alternative medicament.')
+
+
+#Eller
+
+
+Weight = int(input('The patients weight is?\n> '))
+age = int(input('How old is the patient?\n> '))
+if age >12 and Weight>40:
+    print('The patient should have 1 to 2 pills.')
+elif 7<=age >=12 and 40 < Weight >=26:
+    print('The patient should have 1/2 to 1 a pill.')
+elif Weight <26 and Weight > 15 and 7<age>=3:
+    print('The patient should have 1/2 a pill.')
+elif Weight < 15 and age<3
+    print('The FDA approved dosage is no tablet.')
+else:
+    print('we recommend a single tablet.')
+
