@@ -1,0 +1,8 @@
+import random
+
+numbers = random.randint(999, 9999)
+print (f'The number is {numbers}')
+for i in range (999,9999):
+    guess = random.randint(999,9999)
+    if guess == numbers:
+        print (guess)
