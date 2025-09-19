@@ -1,0 +1,20 @@
+import random
+
+value = random.randint(1,100)
+
+print('Welcome to the guessing game')
+numguess = 0
+while True:
+
+    guess=int(input('Will you have a guess at a singel number between 1 and a 100 \n>'))
+    numguess += 1
+    if guess == value:
+        print('You got it, you silly sausage')
+        break
+    elif guess < value:
+        numguess += 1
+        print('Too low')
+    else:
+        numguess += 1
+        print('Too high')
+#and
