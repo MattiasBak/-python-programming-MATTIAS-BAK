@@ -1,0 +1,10 @@
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+noms= range(-10,11)
+squared = [nom **2 for nom in noms]
+print(squared)
+#B)
+plt.plot(noms,squared)
+plt.show()
+
