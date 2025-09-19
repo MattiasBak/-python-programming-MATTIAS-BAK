@@ -1,0 +1,5 @@
+import numpy as np
+Lunch = np.array(["vegetarisk lasagne","spaghetti","fisk","grönsakssoppa","pannkakor"])
+Days = np.array(["Måndag: ","Tisdag: ","Onsdag: ","Torsdag: ","Fredag: "])
+Meny = np.vstack(Days+Lunch)
+print(Meny)
