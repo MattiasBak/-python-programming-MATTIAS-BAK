@@ -1,0 +1,16 @@
+for i in range(0,61,6):
+    print(i)
+
+#B)
+a = int(input('Choose a multiplications table'))
+b = int(input('Where in the table would you like to start?'))
+c = int(input('Where in the table would you like to end?'))
+for i in range(a*b,c*a+1,a):
+    print(i)
+
+
+#C)
+for a in range(0,11):
+    for b in range(0,11):
+        print(f'{a*b:3}',end = ' ' )
+    print()
