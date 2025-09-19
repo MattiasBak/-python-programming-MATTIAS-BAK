@@ -22,13 +22,26 @@ while True:
             break
         else:
             print('Okay, you\'ll get it this time.')
+
+#B)
+
 import random
 
+mode = input('Select a mode: (E)asy (N)ormal or (H)ard\n> ')
+if mode.lower() == 'e':
+    p=int(1)
+    q=int(10)
+elif mode.lower() == 'n':
+    p=int(1)
+    q=int(100)
+else:
+    p=int(1)
+    q=int(1000)
 
 while True:
 
-    x = random.randint(1,10)
-    y = random.randint(1,10)
+    x = random.randint(p,q)
+    y = random.randint(p,q)
     a = x*y
     guess=int(input(f'What is {x} times {y}?\n>'))
     if guess == a:
