@@ -1,0 +1,18 @@
+import random
+
+rolls =[]
+N = 1
+
+while N<11:
+    Value = rolls.append(random.randint(1,6))
+    N=N+1
+print (rolls)
+print(f'Assending {rolls}')
+#B)
+rolls.sort()
+rolls.reverse()
+print(f'Desending {rolls}')
+#C)
+print (max(rolls))
+print (min(rolls))
+
