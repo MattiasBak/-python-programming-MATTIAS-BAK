@@ -1,0 +1,19 @@
+import random
+
+
+while True:
+
+    x = random.randint(1,10)
+    y = random.randint(1,10)
+    a = x*y
+    guess=int(input(f'What is {x} times {y}?\n>'))
+    if guess == a:
+        print('You got it, you silly sausage')
+        Again = input('Do you want to play again? (Y)es or (N)o\n>')
+        if Again.lower() == 'n':
+            print('Thank you for playing')
+            break
+        else:
+            print('Okay, lets go.')
+    else:
+        print('That was a bit off, try again.')
