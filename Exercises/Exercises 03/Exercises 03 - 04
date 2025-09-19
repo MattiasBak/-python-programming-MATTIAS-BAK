@@ -1,0 +1,6 @@
+import math
+No= int(input("Enter No.\n>"))
+facto = 1
+for No in range (1,No+1):
+    facto = facto*No
+    print(facto)
