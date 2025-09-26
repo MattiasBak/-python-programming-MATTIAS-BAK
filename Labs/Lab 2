@@ -1,0 +1,91 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from collections import Counter
+
+K = 10
+
+Datapunkter = []
+just_points = []
+#öppna filen med den faktiska datan
+with open(r"C:\Users\matti\Downloads\datapoints.txt") as datapoint:
+    for line in datapoint:
+        parts = line.strip().split(',')
+        if len(parts) == 3:
+            width = float(parts[0])
+            length = float(parts[1])
+            mouse = int(parts[2])  # 0 = Pichu, 1 = Pikachu
+            Datapunkter.append((width, length, mouse))
+            just_points.append((width, length))
+
+#Spara värden
+wide_pikachu, high_pikachu = [], []
+wide_pichu, high_pichu = [], []
+
+for width, length, mouse in Datapunkter:
+    if mouse == 0:
+        wide_pichu.append(width)
+        high_pichu.append(length)
+    else:
+        wide_pikachu.append(width)
+        high_pikachu.append(length)
+
+
+test_points = []
+#öppna test
+with open(r"C:\Users\matti\Downloads\testpoints.txt") as f:
+    for line in f:
+        parts = line.strip().split(',')
+        if len(parts) == 2:
+            x = float(parts[0]) #bred
+            y = float(parts[1]) #höjd
+            test_points.append((x, y))
+
+# avgörande och distans uträkning
+def euclidean_distance(p1, p2):
+    return np.sqrt(np.sum((np.array(p1) - np.array(p2))**2))
+
+#knn som jag läste från geekforgeek.org
+def knn_classify(data, new_point, k=K):
+    distances = [(euclidean_distance(new_point, point[:2]), point[2]) for point in data]
+    distances.sort(key=lambda x: x[0])
+    k_nearest = [label for _, label in distances[:k]]
+    prediction = Counter(k_nearest).most_common(1)[0][0]
+    return prediction
+
+#Prova med medverkande
+new_point = None
+try:
+    added_data1 = float(input('Add the first point (width):\n> '))
+    added_data2 = float(input('Add the second point (length):\n> '))
+    new_point = (added_data1, added_data2)
+    user_prediction = knn_classify(Datapunkter, new_point, k=K)
+    print(f"Predicted class: {'Pichu' if user_prediction == 0 else 'Pikachu'}")
+except ValueError:
+    print('Please enter numeric values. You may use decimals but not letters or hyroglyphs.')
+
+#Sätta ut de grundläggande punkterna i diagrammet
+plt.scatter(wide_pichu, high_pichu, color='blue', marker='o', label='Pichu (Fasta punkter)')
+plt.scatter(wide_pikachu, high_pikachu, color='red', marker='o', label='Pikachu (Fasta punkter)')
+
+#Var resultatet från testerna landar med respektive färg
+for point in test_points:
+    pred = knn_classify(Datapunkter, point, k=K)
+    color = 'cyan' if pred == 0 else 'orange'
+    plt.scatter(point[0], point[1], color=color, marker='s', label=f'{"Pichu" if pred == 0 else "Pikachu"}(Prov punkter)')
+#användaren lägger in vad den vill ha.
+if new_point:
+    predic = knn_classify(Datapunkter,new_point, k =K)
+    color = 'blue' if predic == 0 else 'red'
+    plt.scatter(new_point[0], new_point[1], color=color, marker='*',  edgecolors='k', s=100, label=f'Your Input is {"Pichu" if predic == 0 else "Pikachu"}(Användarens punkter)')
+#plotta i diagram för alla samtliga inmatningar.
+handles, labels = plt.gca().get_legend_handles_labels()
+by_label = dict(zip(labels, handles))
+plt.legend(by_label.values(), by_label.keys())
+
+
+
+plt.xlabel('Width')
+plt.ylabel('Length')
+plt.title('KNN Classification of Pichu vs Pikachu')
+plt.grid(True)
+plt.show()
