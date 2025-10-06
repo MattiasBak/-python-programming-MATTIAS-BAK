@@ -34,11 +34,11 @@ test_points = []
 #öppna test
 with open(r"C:\Users\matti\Downloads\testpoints.txt") as f:
     for line in f:
-        parts = line.strip().split(',')
-        if len(parts) == 2:
-            x = float(parts[0]) #bred
-            y = float(parts[1]) #höjd
-            test_points.append((x, y))
+        parts = re.search(r'\(([\d.]+),\s*([\d.]+)\)', line) #leta efter mönster för att hitta koordinater
+        if parts:
+            x,y = parts.groups()
+            test_points.append((float(x), float(y)))
+
 
 # avgörande och distans uträkning
 def euclidean_distance(p1, p2):
