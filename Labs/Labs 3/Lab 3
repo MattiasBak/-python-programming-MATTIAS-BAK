@@ -1,1 +1,66 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from collections import Counter
+import pandas as pd
+from sklearn.cluster import KMeans
 
+west = []
+east =[]
+x=[]
+y=[]
+x_punkter=[]
+y_punkter=[]
+
+def weast (x_punkter,y_punkter,k,m):
+    x1,y1 =0,m
+    x2,y2=1,k*1+m
+    brott = (x2-x1)*(y_punkter-y1)-(y2-y1)*(x_punkter-x1)
+    if brott>0:
+        return 1
+    else:
+        return 0
+    
+labelled = "C:/Users/matti/Downloads/labelled.csv"
+Coordinates = r"C:\Users\matti\Downloads\unlabelled_data.csv"
+with open (Coordinates) as cord:
+    for row in cord:
+        Parts = row.strip().split(',')
+        if len(Parts) ==2:
+            x_vär,y_vär =map(float,Parts)
+            x.append(x_vär)
+            y.append(y_vär)
+k=-1
+m=0
+
+antal_0 = 0
+antal_1 = 0
+
+with open (labelled, 'w') as f_write:
+    for x_punkter, y_punkter in zip(x,y):
+        side = weast (x_punkter,y_punkter,k,m)
+        if side == 0:
+            antal_0 +=1
+        else:
+            antal_1 +=1
+        f_write.write(f'({x_punkter:.2f},{y_punkter:.1f}), {side}\n')
+
+x_linje = np.linspace(min(x),max(x))
+y_linje = k*x_linje + m
+y2_linje = (-0.489)*x_linje+m
+y3_linje = 2*x_linje+0.16
+y4_linje = 800*x_linje-120
+
+x_west = [xi for xi, yi in zip(x, y) if weast(xi, yi, k, m) == 0]
+y_west = [yi for xi, yi in zip(x, y) if weast(xi, yi, k, m) == 0]
+x_east = [xi for xi, yi in zip(x, y) if weast(xi, yi, k, m) == 1]
+y_east = [yi for xi, yi in zip(x, y) if weast(xi, yi, k, m) == 1]
+
+plt.ylim((-5,5))
+plt.plot(x_linje,y4_linje,c='magenta')
+plt.plot(x_linje,y3_linje, c= 'blue')
+plt.plot(x_linje,y2_linje, c='black')
+plt.plot(x_linje, y_linje)
+plt.scatter (x_west,y_west,c='red')
+plt.scatter (x_east,y_east, c='green')
+plt.title('Labb 3')
+plt.show()
