@@ -46,9 +46,6 @@ with open (labelled, 'w') as f_write:
 
 x_linje = np.linspace(min(x),max(x))
 y_linje = k*x_linje + m
-y2_linje = (-0.489)*x_linje+m
-y3_linje = 2*x_linje+0.16
-y4_linje = 800*x_linje-120
 
 x_west = [xi for xi, yi in zip(x, y) if weast(xi, yi, k, m) == 0]
 y_west = [yi for xi, yi in zip(x, y) if weast(xi, yi, k, m) == 0]
@@ -56,9 +53,6 @@ x_east = [xi for xi, yi in zip(x, y) if weast(xi, yi, k, m) == 1]
 y_east = [yi for xi, yi in zip(x, y) if weast(xi, yi, k, m) == 1]
 
 plt.ylim((-5,5))
-plt.plot(x_linje,y4_linje,c='magenta')
-plt.plot(x_linje,y3_linje, c= 'blue')
-plt.plot(x_linje,y2_linje, c='black')
 plt.plot(x_linje, y_linje)
 plt.scatter (x_west,y_west,c='red')
 plt.scatter (x_east,y_east, c='green')
