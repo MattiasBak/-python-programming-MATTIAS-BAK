@@ -1,0 +1,9 @@
+import numpy as npletters 
+#a
+letters= [f'{letters}{numbers}'for letters,numbers in zip('ABCDEFGH',range(1,9))]
+print (letters)
+
+#b
+letters2 = [[f'{chr(letters)}{numbers}'for letters in range(ord ('A'),ord ('H')+1)] for numbers in range (1,9)]
+for row in letters2:
+    print (row)
