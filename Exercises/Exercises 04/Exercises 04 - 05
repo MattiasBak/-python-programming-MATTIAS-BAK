@@ -1,0 +1,56 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+#a
+#sixes =[]
+#numbers = [np.random.randint(1,7) for i in range(100)]
+#for i in numbers:
+#    if i ==6:
+#        sixes.append(i)
+#print (f'you have rolles {len(sixes)} sixes')
+
+#b
+tens =[]
+hundreds =[]
+thousands =[]
+ten_thousands=[]
+hundred_thousands=[]
+def dice():
+    return np.random.randint(1,7)
+
+def percentage(amounts,full):
+    return (int(amounts))/(int(full))*100
+
+ten = [dice() for i in range(10)]
+for i in ten:
+    if i ==6:
+        tens.append(6)
+percentage(tens,ten)
+print()
+
+print (f'You got {len(tens)} from rolling ten times')
+        
+
+hundred = [dice() for i in range (100)]
+for i in hundred:
+    if i ==6:
+        hundreds.append(6)
+print (f'You got {len(hundreds)} when rolling a hundred dice')
+
+thousand = [dice() for i in range (1000)]
+for i in thousand:
+    if i ==6:
+        thousands.append(6)
+print(f'you have gotten {(len(thousands))} sixes out of a thousand rolls')
+
+ten_thousand = [dice() for i in range (10000)]
+for i in ten_thousand:
+    if i == 6:
+        ten_thousands.append(6)
+print(f'As we look at all the rolls, we can see that {(len(ten_thousands))} are sixes')
+
+hundred_thousand = [dice() for i in range(100000)]
+for i in hundred_thousand:
+    if i ==6:
+        hundred_thousands.append(6)
+print(f'With a bucket load of dice rolled you have acived {(len(hundred_thousands))} sixes were rolled')
