@@ -1,0 +1,20 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+#a)
+Stad = {
+    'City' : ['Malmö', 'Stockholm', 'Uppsala', 'Göteborg'],
+    'Population' : [347949, 975551, 233839, 583056]
+}
+Cities = pd.DataFrame(Stad)
+#b)
+Söka = input('Vilken Stad söker du: ')
+print (Cities.loc[Cities['City'] == Söka])
+#c)
+Cities.sort_values('Population',ascending=False)
+#d)
+Cities_decending = (Cities.sort_values('Population',ascending=False))
+print(Cities_decending[:3])
+#e)
+Population_of_sweden = (10379295)
+Stad ['Procentual of swedens total inhabitants'] = Cities['Population %'] = (Cities['Population'] / Population_of_sweden) * 100
+print (Cities)
