@@ -1,0 +1,25 @@
+import pandas as pd
+
+data = pd.read_excel ("C:\\Users\\matti\\Downloads\\komtopp50_2020.xlsx")
+#a) ???
+
+#b)
+data = data.dropna()
+
+data = data.rename(columns={'Unnamed: 0':'Rang 2020', 'Unnamed: 1':'Rang 2019', 'Unnamed: 2': 'Kommun',
+                    'Unnamed: 3': 'Folkmängd 2020','Unnamed: 4': 'Folkmängd 2019', 'Unnamed: 5' : 'Förändring'})
+sortkommun = data.sort_values (by='Kommun')
+sortkommun = sortkommun.reset_index(drop=True)
+
+#c)
+sort_Befolk_2020 = data.sort_values(by='Folkmängd 2020',ascending=False)
+sort_Befolk_2020 = sort_Befolk_2020.reset_index(drop=True)
+
+#d)
+Utan_sist = data[:-5]
+#e)
+Befolk_2020 = data['Folkmängd 2020'].sum()
+Befolk_2019 = data['Folkmängd 2019'].sum()
+#f)
+utv_fem = sort_Befolk_2020[:5], sort_Befolk_2020.tail(5)
+print(utv_fem)
