@@ -1,6 +1,7 @@
 import pandas as pd
 
-data = pd.read_excel ("C:\\Users\\matti\\Downloads\\komtopp50_2020.xlsx")
+data = pd.read_excel ("komtopp50_2020.xlsx", sheet_name='Totalt')
+print (data)
 #a) ???
 
 #b)
