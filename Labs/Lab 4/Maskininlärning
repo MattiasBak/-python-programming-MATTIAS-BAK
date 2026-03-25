@@ -1,0 +1,191 @@
+import pandas as pd
+import numpy as np
+from sklearn.neighbors import NearestNeighbors
+from sklearn.feature_extraction.text import TfidfVectorizer
+from scipy.sparse import hstack, csr_matrix
+from sklearn.preprocessing import normalize
+
+link = pd.read_csv (r"C:\\Users\\matti\\Downloads\\links.csv")
+movies = pd.read_csv(r"C:\\Users\\matti\\Downloads\\movies.csv")
+ratings = pd.read_csv (r"C:\\Users\\matti\\Downloads\\ratings.csv")
+tags = pd.read_csv (r"C:\\Users\\matti\\Downloads\\tags.csv")
+
+
+movies ['genres'] = movies['genres'].str.split('|')
+expand_movies = movies.explode('genres')
+explore_movies = pd.get_dummies(expand_movies['genres'])
+matrix_movies = explore_movies.groupby(expand_movies['movieId']).sum()
+avg_rate = ratings.groupby('movieId')['rating'].mean().reset_index()
+count_rate = ratings.groupby('movieId')['rating'].count().reset_index(name= 'count_rate')
+movie_stat = avg_rate.merge(count_rate, on= 'movieId')
+model_movie = NearestNeighbors (metric='cosine', algorithm='brute')
+model_movie.fit (matrix_movies)
+C = movie_stat['rating'].mean()
+m = movie_stat['count_rate'].quantile(0.90)
+
+
+
+
+def search_movie(title_search, movies):
+    result = movies[movies['title'].str.contains(title_search, case=False, na= False, regex=False)]
+
+    if result.empty:
+        print ('Ingen film med denna title hittades')
+        return None
+    return result
+
+
+def recommend_genre (movie_id, n=5):
+    if movie_id not in matrix_movies.index:
+        print(f'{movie_id} genre är okänd')
+        return pd.DataFrame()
+    
+    n= max (1,min(n, len(matrix_movies)-1))
+    idx = matrix_movies.index.get_loc(movie_id)
+
+    distances, indices = model_movie.kneighbors(matrix_movies.iloc[idx].values.reshape(1,-1),
+                                          n_neighbors = n+1)
+
+    similar_ids = matrix_movies.index[indices.flatten()[1:]]
+    similarities = 1- distances.flatten()[1:]
+
+    recom = movies[movies['movieId'].isin(similar_ids)][['movieId','title']]
+    recom = recom.drop_duplicates('movieId')
+    
+    recom = recom.merge(pd.DataFrame({'movieId': similar_ids, 'Similar films': similarities}), on = 'movieId', how = 'left'
+                        ).sort_values('Similar films', ascending=False).reset_index(drop=True)
+    return recom
+
+clean_tags = tags[['movieId','tag']].dropna().copy()
+clean_tags['tag'] = clean_tags['tag'].astype(str).str.strip().str.lower()
+tag_agg = clean_tags.groupby('movieId')['tag'].apply(lambda x:' '.join(x.unique())).reset_index()
+
+movies_tags = movies[['movieId', 'title']].merge(tag_agg,on='movieId',how= 'left').fillna({'tag': ''})
+
+tfidf = TfidfVectorizer(max_features=2000, stop_words='english', ngram_range=(1,2))
+tfidf_matrix = tfidf.fit_transform(movies_tags['tag'])
+
+model_tags = NearestNeighbors(metric='cosine', algorithm='brute')
+model_tags.fit(tfidf_matrix)
+
+
+def recommend_tags (movie_id, n =5):
+    id_to_pos = {mid: i for i, mid in enumerate(movies_tags['movieId'].values)}
+    if movie_id not in id_to_pos:
+        print(f"{movie_id} saknar an sk. tag")
+        return pd.DataFrame()
+    
+    pos = id_to_pos[movie_id]
+    n= max(1, min(n, tfidf_matrix.shape[0]-1))
+
+    distances, indices = model_tags.kneighbors(tfidf_matrix[pos], n_neighbors= n+1)
+
+    neighbor_pos = indices.flatten()[1:]
+    similarities = 1 - distances.flatten()[1:]
+
+    neighbor_ids = movies_tags.iloc [neighbor_pos]['movieId'].values
+    recs = movies [movies['movieId'].isin(neighbor_ids)][['movieId', 'title']].drop_duplicates('movieId')
+    recs = recs.merge(pd.DataFrame({'movieId':neighbor_ids, 'similarity':similarities}), on= 'movieId', how= 'left'
+                      ).sort_values('similarity', ascending= False).reset_index (drop=True)
+    return recs 
+
+ids_genre = set (matrix_movies.index)
+ids_tags = set (movies_tags['movieId'])
+common_ids = sorted(list(ids_genre & ids_tags))
+
+genre_matrix_common = matrix_movies.loc[common_ids].values
+
+pos_map = {mid: i for i, mid in enumerate(movies_tags['movieId'].values)}
+rows= [pos_map[mid] for mid in common_ids]
+tfidf_common = tfidf_matrix[rows]
+
+genre_norm = normalize(genre_matrix_common, norm = 'l2', axis=1)
+
+w_tags=0.7
+w_genre=0.3
+
+genre_sparse = csr_matrix (genre_norm*w_genre)
+tfidf_scaled= tfidf_common*w_tags
+hybrid_matrix = hstack([tfidf_scaled, genre_sparse])
+model_hybrid = NearestNeighbors(metric='cosine', algorithm='brute')
+model_hybrid.fit(hybrid_matrix)
+
+def recommend_both(movie_id, n=5):
+    try:
+        pos = common_ids.index(movie_id)
+    except ValueError:
+        print (f'{movie_id} har tyvärr inga gemansamma tag <-> genre')
+        return pd.DataFrame()
+    
+    n = max(1, min(n, len (common_ids) -1 ))
+
+    distances, indices = model_hybrid.kneighbors(hybrid_matrix[pos], n_neighbors= n +1)
+    neighbor_pos = indices.flatten()[1:]
+    similarities = 1 - distances.flatten()[1:]
+
+    neighbor_ids = np.array(common_ids)[neighbor_pos]
+    recs = movies[movies['movieId'].isin(neighbor_ids)][['movieId', 'title']].drop_duplicates('movieId')
+    sim_df = pd.DataFrame({'movieId': neighbor_ids, 'similarity': similarities})
+    recs = recs.merge(sim_df, on= 'movieId')
+
+    recs = recs.sort_values(by=['weighted_rating', 'similarities'], ascending= False).reset_index(drop=True)
+    return recs
+
+def bayesian_avg(row):
+    v = row['count_rate']
+    R = row['rating']
+    return (v / (v + m) * R) + (m / (v + m) * C)
+
+movie_stat['weighted_rating'] = movie_stat.apply(bayesian_avg, axis=1)
+
+def from_movie_result(results, preferred_title=None):
+    if len(results) == 1:
+        return results.iloc[0]['movieId']
+
+    if preferred_title:
+        exact= results[results['title'].str.lower()==preferred_title.lower()]
+        if len(exact)== 1:
+            return exact.iloc[0]['movieId']
+    
+    print ('\nDet finns fler filmer som matchar din sökning.')
+    for i, row in results.iterrows():
+        print(f"[{i}] {row['title']} (id: {row['movieId']})")
+
+    while True:
+        try:
+            val= int (input ("skriv nummret för filmen du vill välja.\n>"))
+            if val in results.index:
+                return results.loc[val, 'movieId']
+        except:
+            pass
+        print('Detta var ett ogiltigt val. Försök igen.')
+
+
+def recommend_from_title (title_search, n=5, mode='genre'):
+    results = search_movie(title_search, movies)
+    if results is None or len(results)==0:
+        print('Vi hittade inga filmer till dessa speciofikationer')
+        return pd.DataFrame()
+    
+    movie_id = from_movie_result (results, preferred_title = title_search)
+    if movie_id is None:
+        print ('Vi kunde inte välja film.')
+        return pd.DataFrame()
+    
+    print (f"Rekommendationerna vi har tagit fram för dig under dina preferencer är.\n{movies.loc[movies['movieId'] == movie_id, 'title'].values[0]}(ID: {movie_id})")
+
+    if mode == 'genre':
+        return recommend_genre (movie_id, n=n)
+    elif mode == 'tags':
+        return recommend_tags(movie_id,n=n)
+    elif mode == 'hybrid':
+        return recommend_both(movie_id,n=n)
+    else:
+        raise ValueError ('Mode måste vara ett val mellan "Genre", "Tags" eller "Hybrid"')
+
+
+if __name__ == '__main__':
+    title_search = input ('söka efter film\n>')        
+    print (recommend_from_title(title_search, n=10, mode= "genre"))
+    print (recommend_from_title(title_search, n=10, mode= "tags"))
+    print (recommend_from_title(title_search, n=10, mode= "hybrid"))
