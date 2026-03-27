@@ -5,7 +5,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.sparse import hstack, csr_matrix
 from sklearn.preprocessing import normalize
 
-link = pd.read_csv (r"C:\\Users\\matti\\Downloads\\links.csv")
 movies = pd.read_csv(r"C:\\Users\\matti\\Downloads\\movies.csv")
 ratings = pd.read_csv (r"C:\\Users\\matti\\Downloads\\ratings.csv")
 tags = pd.read_csv (r"C:\\Users\\matti\\Downloads\\tags.csv")
@@ -20,8 +19,8 @@ count_rate = ratings.groupby('movieId')['rating'].count().reset_index(name= 'cou
 movie_stat = avg_rate.merge(count_rate, on= 'movieId')
 model_movie = NearestNeighbors (metric='cosine', algorithm='brute')
 model_movie.fit (matrix_movies)
-C = movie_stat['rating'].mean()
-m = movie_stat['count_rate'].quantile(0.90)
+snitt = movie_stat['rating'].mean()
+röst = movie_stat['count_rate'].quantile(0.90)
 
 
 
@@ -119,7 +118,7 @@ def recommend_both(movie_id, n=5):
     
     n = max(1, min(n, len (common_ids) -1 ))
 
-    distances, indices = model_hybrid.kneighbors(hybrid_matrix[pos], n_neighbors= n +1)
+    distances, indices = model_hybrid.kneighbors(hybrid_matrix.getrow(pos), n_neighbors= n +1)
     neighbor_pos = indices.flatten()[1:]
     similarities = 1 - distances.flatten()[1:]
 
@@ -127,14 +126,14 @@ def recommend_both(movie_id, n=5):
     recs = movies[movies['movieId'].isin(neighbor_ids)][['movieId', 'title']].drop_duplicates('movieId')
     sim_df = pd.DataFrame({'movieId': neighbor_ids, 'similarity': similarities})
     recs = recs.merge(sim_df, on= 'movieId')
-
-    recs = recs.sort_values(by=['weighted_rating', 'similarities'], ascending= False).reset_index(drop=True)
+    recs = recs.merge(movie_stat[['movieId', 'weighted_rating']], on= 'movieId', how='left')
+    recs = recs.sort_values(by=['weighted_rating', 'similarity'], ascending= False).reset_index(drop=True)
     return recs
 
 def bayesian_avg(row):
     v = row['count_rate']
     R = row['rating']
-    return (v / (v + m) * R) + (m / (v + m) * C)
+    return (v / (v + röst) * R) + (röst / (v + röst) * snitt)
 
 movie_stat['weighted_rating'] = movie_stat.apply(bayesian_avg, axis=1)
 
@@ -156,9 +155,11 @@ def from_movie_result(results, preferred_title=None):
             val= int (input ("skriv nummret för filmen du vill välja.\n>"))
             if val in results.index:
                 return results.loc[val, 'movieId']
+            else:
+                print (f'index {val} finns inte i listan.')
         except:
             pass
-        print('Detta var ett ogiltigt val. Försök igen.')
+            print('Detta var ett ogiltigt val. Försök igen.')
 
 
 def recommend_from_title (title_search, n=5, mode='genre'):
@@ -185,7 +186,18 @@ def recommend_from_title (title_search, n=5, mode='genre'):
 
 
 if __name__ == '__main__':
-    title_search = input ('söka efter film\n>')        
-    print (recommend_from_title(title_search, n=10, mode= "genre"))
-    print (recommend_from_title(title_search, n=10, mode= "tags"))
-    print (recommend_from_title(title_search, n=10, mode= "hybrid"))
+    title_search = input ('söka efter film\n>')
+    choise = input('Vad är det du sökningen basseras på?\n Välj en av förjande.\n [1] Filmens Genre?\n [2] Vad som skrivits om den (tags)?\n [3] Eller dess en blandning av både filmens genre och dess "tags \n> ')
+
+    val_sök = {'1': 'genre', '2': 'tags', '3':'hybrid'}
+    val_sök = val_sök.get(choise,'hybrid')
+
+    print (f'Påbörjar sökning, letar efter liknande filmer med {val_sök}')
+
+    recommendations = recommend_from_title(title_search, n=10, mode= val_sök)
+
+    if not recommendations.empty:
+        print (f'Dina tio rekommenderade filmerna är ({val_sök}):')
+        print(recommendations[['title', 'similarity', 'weighted_rating']])
+    else:
+        print('Kunde tyvärr inte hitta några rekomendationer.')
